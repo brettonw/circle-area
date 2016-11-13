@@ -6,6 +6,7 @@ let Circle = function () {
     _.construct = function (p, r) {
         this.p = p;
         this.r = r;
+        return this;
     };
 
     _.area = function () {

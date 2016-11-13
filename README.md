@@ -1,1 +1,1 @@
-A simple Javascript test for circle area intersection algorithms
+A simple Javascript test for a circle area intersection algorithm.

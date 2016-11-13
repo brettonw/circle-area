@@ -3,6 +3,10 @@
 let Vector2 = function () {
     let _ = Object.create (null);
 
+    _.perp = function (left) {
+        return Vec2.new (-left.y, left.x);
+    };
+
     _.add = function (left, right) {
         return Vec2.new (left.x + right.x, left.y + right.y);
     };
@@ -37,9 +41,14 @@ let Vector2 = function () {
 let Vec2 = function () {
     let _ = Object.create (null);
 
-    _.construct = function (array) {
-        this.x = array[0];
-        this.y = array[1];
+    _.construct = function (x, y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    };
+
+    _.perp = function () {
+        return Vector2.perp (this);
     };
 
     _.add = function (right) {
@@ -70,13 +79,13 @@ let Vec2 = function () {
         let norm = Vector2.normalize (this);
     };
 
-    _.new = function (...params) {
-        return Object.create (_).construct (params);
+    _.new = function (x, y) {
+        return Object.create (_).construct (x, y);
     };
 
     return _;
 } ();
 
-let V = function (...params) {
-    return Vec2.new (params);
+let V = function (x, y) {
+    return Vec2.new (x, y);
 };

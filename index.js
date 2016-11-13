@@ -1,39 +1,57 @@
-﻿var root;
+﻿let displayDiv;
+let theSvg;
+let theG;
+let mouseDown = false;
+let mouseLoc;
+let theMouseLoc = V(9.5, -0.5);
 
-var drawTree = function () {
-    var adapter = TreeSvg.getDefaultAdapter();
-    adapter.getTitle = function (container) { return container.node; };
-    var layoutName = document.getElementById("layoutSelect").value;
-    var svg = TreeSvg.renderSvg(root, layoutName, adapter);
-    document.getElementById("tree").innerHTML = svg;
+let redRange;
+let blueRange;
+let displayAreaSpan;
+
+let computeMousePos = function (event) {
+    mouseLoc.x = event.clientX;
+    mouseLoc.y = event.clientY;
+    let matrix = theG.getScreenCTM ().inverse ();
+    return mouseLoc.matrixTransform (matrix);
 };
 
-var onLoad = function () {
-    setLayoutSelect(document.getElementById("layoutSelect"), 0);
-    var tsh = TreeSvgHelper;
-    root = tsh.makeContainer("root", null, true);
-    var a = tsh.makeContainer("a", root, true);
-    var b = tsh.makeContainer("b", root, true);
-    var c = tsh.makeContainer("c", root, true);
-    var d = tsh.makeContainer("d", root, true);
-    tsh.makeContainer("e", a, true);
-    tsh.makeContainer("f", a, true);
-    tsh.makeContainer("g", a, true);
-    tsh.makeContainer("h", b, true);
-    tsh.makeContainer("i", b, true);
-    tsh.makeContainer("j", c, true);
-    tsh.makeContainer("k", c, true);
-    tsh.makeContainer("l", c, true);
-    var m = tsh.makeContainer("m", c, false);
-    tsh.makeContainer("n", d, true);
-    tsh.makeContainer("o", d, true);
-    tsh.makeContainer("p", m, true);
-    tsh.makeContainer("q", m, true);
-    tsh.makeContainer("r", m, true);
-    tsh.makeContainer("s", m, true);
-    tsh.makeContainer("t", m, true);
-    tsh.makeContainer("u", m, true);
-    tsh.makeContainer("v", m, true);
+let mousedown = function (event) {
+    let mouse = computeMousePos(event);
+    if (Vector2.subtract (mouse, theMouseLoc).norm () < 0.2) {
+        mouseDown = true;
+        mousemove (event);
+    }
+};
 
-    drawTree();
+let mouseup = function (event) {
+    mouseDown = false;
+};
+
+let mousemove = function (event) {
+    if (mouseDown) {
+        theMouseLoc = computeMousePos (event);
+        draw ();
+    }
+};
+
+let draw = function () {
+    displayDiv.innerHTML = CircleArea.renderSvg ();
+    theSvg = document.getElementById ("theSvg");
+    if (mouseLoc == null) {
+        mouseLoc = theSvg.createSVGPoint ();
+        mouseLoc.x = theMouseLoc.x; mouseLoc.y = theMouseLoc.y;
+    }
+    theSvg.addEventListener ("mousedown", mousedown, false);
+    theSvg.addEventListener ("mouseup", mouseup, false);
+    theSvg.addEventListener ("mousemove", mousemove, false);
+    theG = document.getElementById ("theG");
+};
+
+let onLoad = function () {
+    displayDiv = document.getElementById ("displayDiv");
+    redRange = document.getElementById ("redRange");
+    blueRange = document.getElementById ("blueRange");
+    displayAreaSpan = document.getElementById ("displayAreaSpan");
+    draw ();
 };
