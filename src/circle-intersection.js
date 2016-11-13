@@ -9,9 +9,9 @@ let computeLensInflectionPoint = function (a, b) {
 
 // assuming a is the smaller circle, find the point along the delta vector that is the division
 // between the two arcs in a lens
-let computeLensIntersectionPoint = function (a, b, dSq) {
+let computeLensIntersectionPoint = function (A, B, dSq) {
     let d = Math.sqrt (dSq);
-    return ((a.r * a.r) - (b.r * b.r) + dSq) / (2.0 * Math.sqrt (dSq));
+    return ((A.r * A.r) - (B.r * B.r) + dSq) / (2.0 * Math.sqrt (dSq));
 };
 
 let computeLensArea = function (a, ) {
@@ -19,74 +19,36 @@ let computeLensArea = function (a, ) {
 };
 
 // a is a blocker, and b is a light source, what fractional part of b is visible
-let computeVisibleFraction = function (a, b) {
+let computeVisibleFraction = function (A, B) {
     // the algorithm here identifies several cases:
     // 1) the two circles are entirely disjoint (including touching at a single point)
     // 2) lens, the shape of the intersection resembles a lens
     // 3) crescent, the shape of the intersection resembles a crescent
 
     // compute a few values we'll need repeatedly
-    let delta = Vector2.subtract (a.p, b.p);
+    let delta = Vector2.subtract (A.p, B.p);
     let dSq = Vector2.normSq (delta);
+    let d = Math.sqrt(dSq);
 
     // if the circles are disjoint, the source is completely visible
-    let rSum = a.r + b.r;
-    if (dSq >= (rSum * rSum)) {
+    if (d >= A.r + B.r) {
         return 1.0;
     }
 
-    // 
-
-    // from here, we handle things slightly differently depending on the size relationship of the
-    // two circles
-    switch (Math.sign(a.r - b.r)) {
-        case -1: {
-            // the blocker is smaller than the source
-            // figure the lens inflection point
-            let lensInflectionSq = computeLensInflectionPoint(a, b);
-            if (dSq >= lensInflectionSq) {
-                // compute the lens intersection area
-            } else {
-                // compute the crescent intersection area
-            }
-            break;
-        }
-        case 0: {
-            // the blocker and the source are the same size
-            // in this case, all intersections will be a lens
-            break;
-        }
-        case 1: {
-            // the blocker is larger than the source
-            break;
-        }
-    }
-    if (a.r > b.r) {
+    // if one of the circles is completely contained, there is no intersection point
+    let rDelta = A.r - B.r;
+    if ((rDelta < 0) && (d < -rDelta)) {
+        // the blocker is smaller than the source and is contained
+        let bArea = B.area();
+        return (bArea - A.area()) / bArea;
+    } else if (d < rDelta) {
         // the blocker is larger than the source
-    } else if (a.r < b.r) {
-        // the blocker is smaller than the source
+        return 0.0;
     }
 
-    // compute the distance between the two circle centers
-    let delta = Vector2.subtract (a.p, b.p).norm ();
-
-    // if the two circles are completely separate
-    if (delta > (a.r + b.r)) {
-        return 1.0;
-    }
-
-    // if the smaller circle is completely contained
-    if (delta <= (b.r - a.r)) {
-        let bArea = b.area ();
-        return (bArea - a.area ()) / bArea ();
-    }
-
-    // lens (find the inflection point)
-    if (delta < Math.sqrt ((a.r * a.r) + (b.r * b.r))) {
-
-    }
-
-    // crescent, this is everything else....
+    // compute the lens intersection point
+    let a = ((A.r * A.r) - (B.r * B.r) + dSq) / (2.0 * d);
+    let c =
 };
 
 
