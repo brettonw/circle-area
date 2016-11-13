@@ -1,111 +1,94 @@
-let Vector2 = function () {
-    let _ = Object.create (null);
+"use strict;"
 
-    _.add = function (left, right, out) {
-        if (typeof out === "undefined") out = Vec2.empty ();
-        out.x = left.x + right.x; out.y = left.y + right.y;
-        return out;
-    };
-
-    _.subtract = function (left, right, out) {
-        if (typeof out === "undefined") out = Vec2.empty ();
-        out.x = left.x - right.x; out.y = left.y - right.y;
-        return out;
-    };
-
-    _.scale = function (left, right, out) {
-        if (typeof out === "undefined") out = Vec2.empty ();
-        out.x = left.x * right; out.y = left.y * right;
-        return out;
-    };
-
-    _.dot = function (left, right) {
-        return (left.x * right.x) + (left.y * right.y);
-    };
-
-    _.normSq = function (left) {
-        return _.dot (left, left);
-    };
-
-    _.norm = function (left) {
-        return Math.sqrt (_.dot (left, left));
-    };
-
-    _.normalize = function (left) {
-        return _.scale (left, 1.0 / _.norm (left));
-    };
-
-    return _;
-} ();
-
-let Vec2 = function () {
-    let _ = Object.create (null);
-
-    _.construct = function (array) {
-        this.x = array[0]; this.y = array[1];
-    };
-
-    _.add = function (right) {
-        return Vector2.add (this, right);
-    };
-
-    _.subtract = function (right) {
-        return Vector2.subtract (this, right);
-    };
-
-    _.scale = function (right) {
-        return Vector2.scale (this, right);
-    };
-
-    _.dot = function (right) {
-        return Vector2.dot (this, right);
-    };
-
-    _.normSq = function () {
-        return Vector2.normSq (this);
-    };
-
-    _.norm = function () {
-        return Vector2.norm (this);
-    };
-
-    _.normalize = function () {
-        let norm = Vector2.normalize (this);
-    };
-
-    _.new = function (...params) {
-        return Object.create (_).construct (params);
-    };
-
-    _.empty = function () {
-        return Object.create (_);
-    };
-
-    return _;
-} ();
-
-let V = function (...params) {
-    return Vec2.new (params);
+// assuming a is the smaller circle, find the squared length from the center of b to the point where
+// an intersection transitions from a lens to a crescent
+let computeLensInflectionPoint = function (a, b) {
+    let xSq = (b.r * b.r) - (a.r * a.r);
+    return xSq;
 };
 
-let Circle = function () {
-    let _ = Object.create (null);
+// assuming a is the smaller circle, find the point along the delta vector that is the division
+// between the two arcs in a lens
+let computeLensIntersectionPoint = function (a, b, dSq) {
+    let d = Math.sqrt (dSq);
+    return ((a.r * a.r) - (b.r * b.r) + dSq) / (2.0 * Math.sqrt (dSq));
+};
 
-    _.construct = function (p, r) {
-        this.p = p;
-        this.r = r;
-    };
+let computeLensArea = function (a, ) {
 
-    _.area = function () {
-        return Math.PI * this.r * this.r;
-    };
+};
 
-    _.new = function (p, r) {
-        return Object.create (_).construct (p, r);
-    };
+// a is a blocker, and b is a light source, what fractional part of b is visible
+let computeVisibleFraction = function (a, b) {
+    // the algorithm here identifies several cases:
+    // 1) the two circles are entirely disjoint (including touching at a single point)
+    // 2) lens, the shape of the intersection resembles a lens
+    // 3) crescent, the shape of the intersection resembles a crescent
 
-    return _;
-} ();
+    // compute a few values we'll need repeatedly
+    let delta = Vector2.subtract (a.p, b.p);
+    let dSq = Vector2.normSq (delta);
+
+    // if the circles are disjoint, the source is completely visible
+    let rSum = a.r + b.r;
+    if (dSq >= (rSum * rSum)) {
+        return 1.0;
+    }
+
+    // 
+
+    // from here, we handle things slightly differently depending on the size relationship of the
+    // two circles
+    switch (Math.sign(a.r - b.r)) {
+        case -1: {
+            // the blocker is smaller than the source
+            // figure the lens inflection point
+            let lensInflectionSq = computeLensInflectionPoint(a, b);
+            if (dSq >= lensInflectionSq) {
+                // compute the lens intersection area
+            } else {
+                // compute the crescent intersection area
+            }
+            break;
+        }
+        case 0: {
+            // the blocker and the source are the same size
+            // in this case, all intersections will be a lens
+            break;
+        }
+        case 1: {
+            // the blocker is larger than the source
+            break;
+        }
+    }
+    if (a.r > b.r) {
+        // the blocker is larger than the source
+    } else if (a.r < b.r) {
+        // the blocker is smaller than the source
+    }
+
+    // compute the distance between the two circle centers
+    let delta = Vector2.subtract (a.p, b.p).norm ();
+
+    // if the two circles are completely separate
+    if (delta > (a.r + b.r)) {
+        return 1.0;
+    }
+
+    // if the smaller circle is completely contained
+    if (delta <= (b.r - a.r)) {
+        let bArea = b.area ();
+        return (bArea - a.area ()) / bArea ();
+    }
+
+    // lens (find the inflection point)
+    if (delta < Math.sqrt ((a.r * a.r) + (b.r * b.r))) {
+
+    }
+
+    // crescent, this is everything else....
+};
+
 
 let CircleArea = function () {
     let _ = Object.create(null);
@@ -115,10 +98,9 @@ let CircleArea = function () {
 
     // function to compute the visible area of b
     let computeVisibleAmount = function (a, b) {
-        // ensure "b" is the bigger one
+        // the question here is ... given that b is a light source and a is a blocker, how much of b
+        // is visible?
         if (a.r > b.r ) {
-            let c = a; a = b; b = c;
-            // XXX probably need to record that I did this
         }
 
         // compute the distance between the two circle centers
@@ -307,7 +289,7 @@ let CircleArea = function () {
         return layoutNames;
     };
 
-    // render with an adapter (an object that links externally defined values 
+    // render with an adapter (an object that links externally defined values
     // to the display characteristics of the node)
     _.renderSvg = function (root, layoutName, adapter) {
         // create the raw SVG picture for display, assumes a width/height aspect ratio of 3/2
@@ -413,7 +395,7 @@ let CircleArea = function () {
             if (container.node != null) {
                 let title = adapter.getTitle(container);
 
-                // create an SVG group, with a click handler, note that the 
+                // create an SVG group, with a click handler, note that the
                 // browsers all handle this differently (of course) - so we
                 // go with the W3C way, and only handle click events
                 svg += '<g onclick="onTreeClick({ id:' + container.id + ', event:evt });">';
