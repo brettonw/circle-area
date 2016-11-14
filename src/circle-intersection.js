@@ -2,27 +2,33 @@
 
 let svg;
 
-let initialPrintY = -185;
+let initialPrintY = -203;
 let halfLine = 9;
-let print = function (name, value) {
-    svg += '<g transform="scale(0.025, -0.025)"><text x="470" y="' + printY + '"><tspan>' + name + ' = ' + value.toPrecision (3) + '</tspan></tspan></text></g>';
+let print = function (left, text) {
+    svg += '<g transform="scale(0.025, -0.025)"><text x="' + left + '" y="' + printY + '"><tspan>' + text + '</tspan></tspan></text></g>';
     printY += halfLine + halfLine;
+};
+
+let printValue = function (name, value) {
+    print (470, name + " = " + value.toPrecision (3));
 };
 
 // a is a blocker, and b is a light source, what fractional part of b is visible
 let computeVisibleFraction = function (A, B) {
     printY = initialPrintY;
 
+    print (0, "Click on the blue circle center to move it.");
+
     // report the basic statistics
-    print ("A.r (red)", A.r);
-    print ("B.r (blue)", B.r);
+    printValue ("A.r (red)", A.r);
+    printValue ("B.r (blue)", B.r);
     printY += halfLine;
 
     // compute a few values we'll need repeatedly
     let delta = Vector2.subtract (B.p, A.p);
     let dSq = Vector2.normSq (delta);
     let d = Math.sqrt(dSq);
-    print ("d", d);
+    printValue ("d", d);
     printY += halfLine;
 
     // draw the connection line
@@ -35,9 +41,9 @@ let computeVisibleFraction = function (A, B) {
 
     // we'll need the areas of the two circles
     let aArea = A.area ();
-    print ("A.area", aArea);
+    printValue ("A.area", aArea);
     let bArea = B.area ();
-    print ("B.area", bArea);
+    printValue ("B.area", bArea);
     printY += halfLine;
 
     // if one of the circles is completely contained, there is no intersection point
@@ -54,9 +60,9 @@ let computeVisibleFraction = function (A, B) {
     let a = ((A.r * A.r) - (B.r * B.r) + dSq) / (2.0 * d);
     let b = d - a;
     let c = Math.sqrt ((A.r * A.r) - (a * a));
-    print ("a", a);
-    print ("b", b);
-    print ("c", c);
+    printValue ("a", a);
+    printValue ("b", b);
+    printValue ("c", c);
     printY += halfLine;
 
     // compute the location of the intersection point
@@ -71,40 +77,38 @@ let computeVisibleFraction = function (A, B) {
 
     // compute the angle of the wedge on A, and the area of the subtended wedge as a fraction of the circle
     let thetaA = Math.atan2(c, a);
-    print ("thetaA", thetaA);
+    printValue ("thetaA", thetaA);
     let wedgeAreaA = aArea * (thetaA / Math.PI);
-    print ("wedge A", wedgeAreaA);
+    printValue ("wedge A", wedgeAreaA);
     let lensAreaA = wedgeAreaA - (a * c);
-    print ("a * c", a * c);
-    print ("lens A", lensAreaA);
+    printValue ("a * c", a * c);
+    printValue ("lens A", lensAreaA);
     printY += halfLine;
 
     // compute the angle of the wedge on B, and the area of the subtended wedge as a fraction of the circle
     let thetaB = Math.atan2 (c, b);
-    print ("thetaB", thetaB);
+    printValue ("thetaB", thetaB);
     let wedgeAreaB = bArea * (thetaB / Math.PI);
-    print ("wedge B", wedgeAreaB);
+    printValue ("wedge B", wedgeAreaB);
     let lensAreaB = wedgeAreaB - (b * c);
-    print ("b * c", b * c);
-    print ("lens B", lensAreaB);
+    printValue ("b * c", b * c);
+    printValue ("lens B", lensAreaB);
     printY += halfLine;
 
     // return the area of the source minus the area of the intersection
-    print ("lens A + B", lensAreaA + lensAreaB);
-    print ("total inclusion", bArea - (lensAreaA + lensAreaB));
+    printValue ("lens A + B", lensAreaA + lensAreaB);
+    printValue ("total inclusion", bArea - (lensAreaA + lensAreaB));
     return (bArea - (lensAreaA + lensAreaB)) / bArea;
 };
 
 
-let CircleArea = function () {
+let CircleIntersection = function () {
     let _ = Object.create(null);
 
     // parameters used by the layout
     let displayWidth = 600;
     let displayHeight = 400;
 
-    // render with an adapter (an object that links externally defined values
-    // to the display characteristics of the node)
     _.renderSvg = function () {
         // create the raw SVG picture for display, assumes a width/height aspect ratio of 3/2
         svg = '<div class="svg-div">';
@@ -150,7 +154,7 @@ let CircleArea = function () {
         svg += '<line x1="0" y1="-5" x2="0" y2="5" stroke="gray" stroke-width="0.05" />';
 
         let rA = redRange.value * 5.0 / 100.0;
-        let A = Circle.new (V (2.75, 0.0), rA);
+        let A = Circle.new (V (3.0, 0.0), rA);
         let B = Circle.new (V (theMouseLoc.x, theMouseLoc.y), blueRange.value * 5.0 / 100.0);
 
         svg += '<circle title="A" cx="' + A.p.x + '" cy="' + A.p.y + '" r="' + A.r + '" fill="none" stroke="red" stroke-width="0.05"/>';

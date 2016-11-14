@@ -36,7 +36,7 @@ let mousemove = function (event) {
 };
 
 let draw = function () {
-    displayDiv.innerHTML = CircleArea.renderSvg ();
+    displayDiv.innerHTML = CircleIntersection.renderSvg ();
     theSvg = document.getElementById ("theSvg");
     if (mouseLoc == null) {
         mouseLoc = theSvg.createSVGPoint ();
