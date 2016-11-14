@@ -16,6 +16,10 @@ let redRange;
 let blueRange;
 let displayAreaSpan;
 
+let smoothStepCheckbox;
+let linearStepCheckbox;
+let myStepCheckbox;
+
 let A, B;
 
 let computeMousePos = function (event) {
@@ -66,16 +70,26 @@ let smoothStep = function (edge0, edge1, x) {
     return x * x * (3.0 - (2.0 * x));
 };
 
+// custom fit function combining linear approximation with hermite interpolation after the cusp
+let inflectionPt = 5.0 / 6.0; // dxdy = 1
+let inflectionValue = inflectionPt * inflectionPt * (3.0 - (2.0 * inflectionPt));
+let myStep = function (edge0, edge1, x) {
+    x = linearStep (edge0, edge1, x);
+    return (x < inflectionPt) ? (inflectionValue * x / inflectionPt) : (x * x * (3.0 - (2.0 * x)));
+};
+
 let plot = function () {
     let rA = redRange.value * 5.0 / 100.0;
     let rB = blueRange.value * 5.0 / 100.0;
     let A = Circle.new (V (0.0, 0.0), rA);
 
     let plotDataArray = [];
+    let plotTitleArray = [];
 
     let plotData = [];
     let smoothStepPlotData = [];
     let linearStepPlotData = [];
+    let myStepPlotData = [];
 
     let bArea = Math.PI * rB * rB;
     let baseline = Math.max (0.0, (bArea - A.area()) / bArea);
@@ -90,15 +104,30 @@ let plot = function () {
 
         smoothStepPlotData.push ({ x: x, y: baseline + (smoothStep(edge0, edge1, x) * (1.0 - baseline)) });
         linearStepPlotData.push ({ x: x, y: baseline + (linearStep(edge0, edge1, x) * (1.0 - baseline)) });
+        myStepPlotData.push ({ x: x, y: baseline + (myStep(edge0, edge1, x) * (1.0 - baseline)) });
 
         let B = Circle.new (V (x, 0.0), rB);
         plotData.push ({ x: x, y: computeVisibleFraction (A, B) });
     }
-    plotDataArray.push (smoothStepPlotData);
-    plotDataArray.push (linearStepPlotData);
-    plotDataArray.push (plotData);
 
-    plotDiv.innerHTML = PlotSvg.multipleLine ("Visibility of Blue by Separation", "d", "Vis (d)", plotDataArray, ["Smooth Step", "Linear", "Analytic"]);
+    if (smoothStepCheckbox.checked) {
+        plotDataArray.push (smoothStepPlotData);
+        plotTitleArray.push ("Smooth Step");
+    }
+    if (linearStepCheckbox.checked) {
+        plotDataArray.push (linearStepPlotData);
+        plotTitleArray.push ("Linear Step");
+    }
+    if (myStepCheckbox.checked) {
+        plotDataArray.push (myStepPlotData);
+        plotTitleArray.push ("My Step");
+    }
+    plotDataArray.push (plotData);
+    plotTitleArray.push ("Analytic");
+
+    //plotDiv.innerHTML = PlotSvg.multipleLine ("Visibility of Blue by Separation", "d", "Vis (d)", [myStepPlotData], ["My Step"]);
+    //plotDiv.innerHTML = PlotSvg.multipleLine ("Visibility of Blue by Separation", "d", "Vis (d)", [myStepPlotData, plotData], ["My Step", "Analytic"]);
+    plotDiv.innerHTML = PlotSvg.multipleLine ("Visibility of Blue by Separation", "d", "Vis (d)", plotDataArray, plotTitleArray);
     //plotDiv.innerHTML = PlotSvg.wrap(plotSvg, 450, "display", "centered");
 };
 
@@ -177,6 +206,12 @@ let onLoad = function () {
     redRange = document.getElementById ("redRange");
     blueRange = document.getElementById ("blueRange");
     displayAreaSpan = document.getElementById ("displayAreaSpan");
+
+    smoothStepCheckbox = document.getElementById ("smoothStepCheckbox");
+    linearStepCheckbox = document.getElementById ("linearStepCheckbox");
+    myStepCheckbox = document.getElementById ("myStepCheckbox");
+
+
     draw ();
     plot ();
 };
