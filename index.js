@@ -1,4 +1,6 @@
-﻿let displayDiv;
+﻿"use strict;"
+
+let displayDiv;
 let theSvg;
 let theG;
 let mouseDown = false;
