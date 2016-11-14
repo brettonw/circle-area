@@ -23,9 +23,15 @@ div#title {
 }
 
 div#displayDiv {
-    margin-top:         5px;
-    height:             400px;
-    background-color:   #ff0000;
+    margin-top: 5px;
+    height: 400px;
+    background-color: #ff0000;
+}
+
+div#plotDiv {
+    margin-top: 5px;
+    height: 400px;
+    background-color: #ff0000;
 }
 
 div#footer {
@@ -49,6 +55,16 @@ div#footer {
     padding: 0;
     margin: 0;
     overflow: hidden;
+}
+
+g#theG {
+    pointer-events: none;
+    user-select: none;
+}
+
+.myG {
+    pointer-events: none;
+    user-select: none;
 }
 
 input[type=range].myRange {
