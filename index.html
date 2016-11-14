@@ -22,13 +22,13 @@
 <div style="font-size:12px;width:600px;height:34px; margin-top:2px;margin-bottom:2px;vertical-align:middle;">
     <table style="width:100%;">
         <tr>
-            <td>Radius A (Red)
+            <td style="width:40%;">Radius A (Red)
                 <input type="range" class="myRange" style="width:100px;vertical-align:middle;" id="redRange" min="0" max="100" step="1" value="50" oninput="draw (); plot ();">
             </td>
-            <td>Radius B (Blue)
+            <td style="width:40%;">Radius B (Blue)
                 <input type="range" class="myRange" style="width:100px;vertical-align:middle;" id="blueRange" min="0" max="100" step="1" value="25" oninput="draw (); plot ();">
             </td>
-            <td><span style="float:right;" id="displayAreaSpan">0</span></td>
+            <td style="width: 20%;"><span style="float:right;" id="displayAreaSpan">0</span></td>
         </tr>
     </table>
 
@@ -67,10 +67,10 @@
 <div style="font-size:12px;height:34px; margin-top:2px;margin-bottom:2px;vertical-align:middle;width:600px;">
     <table style="width:100%;">
         <tr>
-            <td><input type="checkbox" id="smoothStepCheckbox" onchange="plot ();">Smooth Step</td>
-            <td><input type="checkbox" id="linearStepCheckbox" onchange="plot ();">Linear Step</td>
-            <td><input type="checkbox" id="myStepCheckbox" onchange="plot ();">My Step</td>
-            <td><input type="checkbox" id="analyticCheckbox" onchange="plot ();" CHECKED>Analytic
+            <td style="width: 25%;"><input type="checkbox" id="smoothStepCheckbox" onchange="plot ();">Smooth Step</td>
+            <td style="width: 25%;"><input type="checkbox" id="linearStepCheckbox" onchange="plot ();">Linear Step</td>
+            <td style="width: 25%;"><input type="checkbox" id="myStepCheckbox" onchange="plot ();">My Step</td>
+            <td style="width: 25%;"><input type="checkbox" id="analyticCheckbox" onchange="plot ();" CHECKED>Analytic
             </td>
         </tr>
         <tr>

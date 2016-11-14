@@ -63,19 +63,31 @@ let linearStep = function (edge0, edge1, x) {
     return clamp ((x - edge0) / (edge1 - edge0), 0.0, 1.0);
 };
 
-let smoothStep = function (edge0, edge1, x) {
-    // Scale, bias and saturate x to 0..1 range
-    x = linearStep (edge0, edge1, x);
-    // Evaluate polynomial
+let hermite = function (x) {
     return x * x * (3.0 - (2.0 * x));
 };
 
+let smoothStep = function (edge0, edge1, x) {
+    return hermite (linearStep (edge0, edge1, x));
+};
+
+
+let inflectionPt = function () {
+    // the smoothstep (hermite) function, y = -2x^3 + 3x^2
+    // the first derivative, dy = -6x^2 + 6x
+    // solve for dy = 1 using quadratic formula, -6x^2 + 6x + -1 = 0
+    let a = -6, b = 6, c = -1;
+    // traditional formulation is fine for this case as a is well conditioned, x = (b +/- sqrt(b2-4ac)) / 2a
+    // we only want the second root
+    return (-b - Math.sqrt ((b * b) - (4.0 * a * c))) / (2.0 * a);
+} ();
+console.log ("InflectionPt = " + inflectionPt);
+let inflectionValue = hermite (inflectionPt);
+
 // custom fit function combining linear approximation with hermite interpolation after the cusp
-let inflectionPt = 0.7886751345948128; // dxdy = 1
-let inflectionValue = inflectionPt * inflectionPt * (3.0 - (2.0 * inflectionPt));
 let myStep = function (edge0, edge1, x) {
     x = linearStep (edge0, edge1, x);
-    return (x < inflectionPt) ? (inflectionValue * x / inflectionPt) : (x * x * (3.0 - (2.0 * x)));
+    return (x < inflectionPt) ? (inflectionValue * x / inflectionPt) : hermite(x);
 };
 
 let plot = function () {
@@ -164,17 +176,18 @@ let baseSvg = function () {
     svg += '<g>';
 
     // a grid
+    let right = 11;
     for (let i = -5; i <= 5; ++i) {
         if (i != 0) {
-            svg += '<line x1="0" y1="' + i + '" x2="15" y2="' + i + '" stroke="gray" stroke-width="0.01" />';
+            svg += '<line x1="0" y1="' + i + '" x2="' + right + '" y2="' + i + '" stroke="gray" stroke-width="0.01" />';
         }
     }
-    for (let i = 0; i <= 15; ++i) {
+    for (let i = 0; i <= right; ++i) {
         if (i != 0) {
             svg += '<line x1="' + i + '" y1="-5" x2="' + i + '" y2="5" stroke="gray" stroke-width="0.01" />';
         }
     }
-    svg += '<line x1="0" y1="0" x2="15" y2="0" stroke="gray" stroke-width="0.05" />';
+    svg += '<line x1="0" y1="0" x2="' + right + '" y2="0" stroke="gray" stroke-width="0.05" />';
     svg += '<line x1="0" y1="-5" x2="0" y2="5" stroke="gray" stroke-width="0.05" />';
 
     // this is where the actual dynamic content goes...
