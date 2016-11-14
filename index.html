@@ -15,28 +15,73 @@
     <title>Circle Area</title>
 </head>
 <body onload="onLoad();">
-    <div id="title"><span style="font-family:sans-serif;font-size:24px;color:white;">Circle Intersection Area</span><a href="https://github.com/brettonw/circle-area" style="float:right;text-decoration:none;font-family:sans-serif;font-size:14px;color:white;">... on GitHub</a></div>
-    <div id="displayDiv"></div>
-    <div style="font-size:12px;height:34px; margin-top:2px;margin-bottom:2px;vertical-align:middle;">
-        R - Red <input type="range" class="myRange" style="width:200px;vertical-align:middle;" id="redRange" min="0" max="100" step="1" value="50" oninput="draw (); plot ();">
-        R - Blue <input type="range" class="myRange" style="width:200px;vertical-align:middle;" id="blueRange" min="0" max="100" step="1" value="25" oninput="draw (); plot ();">
-        <span style="float:right;" id="displayAreaSpan">0</span>
-    </div>
-    <div id="plotDiv"></div>
-    <div style="font-size:12px;height:34px; margin-top:2px;margin-bottom:2px;vertical-align:middle;width:600px;">
-        <table style="width:100%;">
-            <tr>
-                <td><input type="checkbox" id="smoothStepCheckbox" onchange="plot ();">Smooth Step</td>
-                <td><input type="checkbox" id="linearStepCheckbox" onchange="plot ();">Linear Step</td>
-                <td><input type="checkbox" id="myStepCheckbox" onchange="plot ();">My Step</td>
-            </tr>
-            <tr><td colspan="3" style="font-size: 14px;">
+<div id="title">
+    <span style="font-family:sans-serif;font-size:24px;color:white;">Circle Intersection Area</span><a href="https://github.com/brettonw/circle-area" style="float:right;text-decoration:none;font-family:sans-serif;font-size:14px;color:white;">... on GitHub</a>
+</div>
+<div id="displayDiv"></div>
+<div style="font-size:12px;width:600px;height:34px; margin-top:2px;margin-bottom:2px;vertical-align:middle;">
+    <table style="width:100%;">
+        <tr>
+            <td>Radius A (Red)
+                <input type="range" class="myRange" style="width:100px;vertical-align:middle;" id="redRange" min="0" max="100" step="1" value="50" oninput="draw (); plot ();">
+            </td>
+            <td>Radius B (Blue)
+                <input type="range" class="myRange" style="width:100px;vertical-align:middle;" id="blueRange" min="0" max="100" step="1" value="25" oninput="draw (); plot ();">
+            </td>
+            <td><span style="float:right;" id="displayAreaSpan">0</span></td>
+        </tr>
+    </table>
+
+</div>
+<div style="font-size:14px;margin-top:2px;margin-bottom:2px;vertical-align:middle;width:600px;">
+    <p>The intersection of two circles of varying radii is an interesting geometric problem. I am
+        interested in the solution so that I can incorporate a shadow umbra/penumbra calculation into a
+        shader program.</p>
+
+    <p>The algorithm divides the solution into three independent ranges:</p>
+    <li>
+        <p>
+            <em>Disjoint:</em> if the two circles are further apart than the sum of their radii, there are
+            no points of intersection, and the answer is simply related to the are of the circle you care about.
+        </p>
+    </li>
+    <li>
+        <p>
+            <em>Contained:</em> if one of the two circles is completely contained within the other, there
+            are no points of intersection, and the answer is simply related to the areas of the two circles.
+        </p>
+    </li>
+    <li>
+        <p><em>Intersecting:</em> Technically, there could be one, two, or infinitely many points of
+            intersection. The one-point case is when the edges of the circles are touching. The
+            infinitely-many-points case is when the circles are exactly the same size and perfectly
+            centered on each other. I model both of these situations as either Contained or Disjoint
+            because I really only care about overlapping area.</p>
+        <p>The overlapping area case is solved by computing the lens shape at the end of a right
+            triangle wedge on each of the circles, and summing them. There are plenty of other
+            references for this on the web if you need the derivation.</p>
+    </li>
+
+</div>
+<div id="plotDiv"></div>
+<div style="font-size:12px;height:34px; margin-top:2px;margin-bottom:2px;vertical-align:middle;width:600px;">
+    <table style="width:100%;">
+        <tr>
+            <td><input type="checkbox" id="smoothStepCheckbox" onchange="plot ();">Smooth Step</td>
+            <td><input type="checkbox" id="linearStepCheckbox" onchange="plot ();">Linear Step</td>
+            <td><input type="checkbox" id="myStepCheckbox" onchange="plot ();">My Step</td>
+            <td><input type="checkbox" id="analyticCheckbox" onchange="plot ();" CHECKED>Analytic
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-size: 14px;">
                 I examined several alternatives to the involved computation of the intersection area
                 for inclusion in a GPU shader. I ended up with a combination of the smoothstep
                 function (Hermite) and simple linear approximation. Check the boxes above to compare
                 these three approximations to the analytic solution.
-            </td></tr>
-        </table>
-    </div>
+            </td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>

@@ -19,8 +19,8 @@ let displayAreaSpan;
 let smoothStepCheckbox;
 let linearStepCheckbox;
 let myStepCheckbox;
+let analyticCheckbox;
 
-let A, B;
 
 let computeMousePos = function (event) {
     mouseLoc.x = event.clientX;
@@ -71,7 +71,7 @@ let smoothStep = function (edge0, edge1, x) {
 };
 
 // custom fit function combining linear approximation with hermite interpolation after the cusp
-let inflectionPt = 5.0 / 6.0; // dxdy = 1
+let inflectionPt = 0.7886751345948128; // dxdy = 1
 let inflectionValue = inflectionPt * inflectionPt * (3.0 - (2.0 * inflectionPt));
 let myStep = function (edge0, edge1, x) {
     x = linearStep (edge0, edge1, x);
@@ -122,8 +122,10 @@ let plot = function () {
         plotDataArray.push (myStepPlotData);
         plotTitleArray.push ("My Step");
     }
-    plotDataArray.push (plotData);
-    plotTitleArray.push ("Analytic");
+    if (analyticCheckbox.checked) {
+        plotDataArray.push (plotData);
+        plotTitleArray.push ("Analytic");
+    }
 
     //plotDiv.innerHTML = PlotSvg.multipleLine ("Visibility of Blue by Separation", "d", "Vis (d)", [myStepPlotData], ["My Step"]);
     //plotDiv.innerHTML = PlotSvg.multipleLine ("Visibility of Blue by Separation", "d", "Vis (d)", [myStepPlotData, plotData], ["My Step", "Analytic"]);
@@ -210,7 +212,7 @@ let onLoad = function () {
     smoothStepCheckbox = document.getElementById ("smoothStepCheckbox");
     linearStepCheckbox = document.getElementById ("linearStepCheckbox");
     myStepCheckbox = document.getElementById ("myStepCheckbox");
-
+    analyticCheckbox = document.getElementById ("analyticCheckbox");
 
     draw ();
     plot ();
