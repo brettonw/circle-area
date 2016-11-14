@@ -30,6 +30,12 @@
                 <td><input type="checkbox" id="linearStepCheckbox" onchange="plot ();">Linear Step</td>
                 <td><input type="checkbox" id="myStepCheckbox" onchange="plot ();">My Step</td>
             </tr>
+            <tr><td colspan="3" style="font-size: 14px;">
+                I examined several alternatives to the involved computation of the intersection area
+                for inclusion in a GPU shader. I ended up with a combination of the smoothstep
+                function (Hermite) and simple linear approximation. Check the boxes above to compare
+                these three approximations to the analytic solution.
+            </td></tr>
         </table>
     </div>
 </body>
